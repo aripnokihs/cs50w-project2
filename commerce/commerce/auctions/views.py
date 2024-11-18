@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models import CharField
@@ -6,9 +7,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
+from unicodedata import category
+
 from .models import User, Listing, Category
 
-class Create_listing_form(forms.Form):
+class Create_listing_form(forms.ModelForm):
+    class Meta:
+        model = Listing
+        fields = ["title", "description", "starting_bid", "image", "category"]
+        # widgets = {
+        #     "description": forms.Textarea
+        #
+        # }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
@@ -16,9 +26,16 @@ class Create_listing_form(forms.Form):
                 field.widget.attrs['class'] += ' form-control'
             else:
                 field.widget.attrs['class'] = 'form-control'
-    title=forms.CharField(max_length=64, label="TITLE")
-    description=forms.CharField(widget=forms.Textarea, max_length=1000, label="DESCRIPTION")
-    starting_bid=forms.IntegerField(label="STARTING BID", widget=forms.NumberInput(attrs={'style': 'width: 100px;'}))
+            # self.fields['category'] = forms.ModelChoiceField(
+            #     queryset=Category.objects.all(),
+            #     label="CATEGORY",
+            #     empty_label="Select a Category"
+            # )
+    title = forms.CharField(max_length=64, label="TITLE")
+    description = forms.CharField(widget=forms.Textarea, max_length=1000, label="DESCRIPTION")
+    starting_bid = forms.IntegerField(label="STARTING BID", widget=forms.NumberInput(attrs={'style': 'width: 200px;'}))
+    image = forms.ImageField(label="IMAGE", widget=forms.FileInput(attrs={'style': 'width: 200px; height: 50px;'}))
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), label="CATEGORY")
 def index(request):
     listings = Listing.objects.all()
     return render(request, "auctions/index.html", {
@@ -78,13 +95,15 @@ def register(request):
         return render(request, "auctions/register.html")
 def create_listing(request):
     if request.method == "POST":
-        form = Create_listing_form(request.POST)
-        if(form.is_valid()):
-            title = form.cleaned_data["title"]
-            description = form.cleaned_data["description"]
-            starting_bid = form.cleaned_data["starting_bid"]
-            
-
+        form = Create_listing_form(request.POST, request.FILES)
+        if form.is_valid():
+            print("inside3")
+            print(form)
+            form.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            print(form.errors)
+            messages.error(request, "There was an error creating your listing. Please try again.")
     return render(request, "auctions/create_listing.html", {
         "create_listing_form": Create_listing_form()
     })

@@ -1,7 +1,8 @@
 {% extends "auctions/layout.html" %}
 {% block body %}
   <div class="container">
-    <form action="{% url 'create_listing' %}" method="POST">
+    <form action="{% url 'create_listing' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
       {{ create_listing_form }}
       <div style="padding-top: 20px;">
         <button type="submit" class="btn btn-primary">SUBMIT</button>
