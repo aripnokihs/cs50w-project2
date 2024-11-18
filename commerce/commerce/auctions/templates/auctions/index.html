@@ -3,14 +3,19 @@
 {% block body %}
   <h2>Active Listings</h2>
   {% for listing in listings %}
-    <div class="show_listing" style="height: 100px; ">
-    <div style="padding: 10px;">
-      <h3>{{ listing.title }}</h3>
-      {% if listing.image != "1" %}
-        <img src="{{ listing.image.url }}" alt={{ listing.title }}>
-      {% endif %}
-      <b>Price: </b>{{ listing.starting_bid }}$
-    </div>
+    <div class="show_listing">
+      <div style="padding: 10px;">
+        <h3>{{ listing.title }}</h3>
+        {% if listing.image != "1" %}
+          <img src="{{ listing.image.url }}" alt="{{ listing.title }}" style="width: 50%;">
+        {% endif %}
+      </div>
+      <div>
+        <b>Description:</b>{{ listing.description|truncatechars:50 }}
+      </div>
+      <div>
+        <b>Price:</b> {{ listing.starting_bid }}$
+      </div>
     </div>
   {% endfor %}
 {% endblock %}
