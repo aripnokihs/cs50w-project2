@@ -108,5 +108,11 @@ def create_listing(request):
         "create_listing_form": Create_listing_form()
     })
 
-def listing_page(request):
+def listing_page(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    return render(request, "auctions/listing_page.html", {
+        "listing": listing,
+    })
+
+def watchlist(request):
     pass

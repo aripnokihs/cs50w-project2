@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+  <div style="padding: 10px;">
+    <a href="{% url 'listing_page' listing.id %}"><h3>{{ listing.title }}</h3></a>
+    {% if listing.image != "1" %}
+      <img src="{{ listing.image.url }}" alt="{{ listing.title }}" style="width: 50%;">
+    {% endif %}
+  </div>
+  <div>
+    <b>Description:</b>{{ listing.description }}
+  </div>
+  <div>
+    <b>Price:</b> {{ listing.starting_bid }}$
+  </div>
+  <div style="display: flex; justify-content: flex-end; padding-top: 20px;">
+    <div class="row">
+      <div style="padding-right: 20px;">
+        <a href="{% url 'index' %}">
+          <button type="submit" class="btn btn-outline-primary" name="return" value=0>RETURN</button>
+        </a>
+      </div>
+      <a href="{% url 'index' %}" methods="POST">
+      <button type="submit" class="btn btn-primary" name="add" value=1>ADD</button>
+      </a>
+    </div>
+  </div>
+{% endblock %}
