@@ -98,8 +98,8 @@ def create_listing(request):
     if request.method == "POST":
         form = Create_listing_form(request.POST, request.FILES)
         if form.is_valid():
-            print("inside3")
-            print(form)
+            # print("inside3")
+            # print(form)
             listing = form.save(commit=False)
             listing.creator = request.user
             listing.save()
@@ -118,13 +118,21 @@ def listing_page(request, listing_id):
     })
 
 def watchlist(request):
+    usr = User.objects.get(pk=request.user.id)
     if request.method == "POST":
-        listing_id = request.POST.get("add")
-        listing = Listing.objects.get(pk=listing_id)
-        user_id = int(request.POST.get("user"))
-        usr = User.objects.get(pk=user_id)
-        usr.watchlist.add(listing)
-
-        return HttpResponseRedirect(reverse("index"))
-    else:
-        print("WRONG!")
+        if request.POST.get("add") != None:
+            listing_id = request.POST.get("add")
+            listing = Listing.objects.get(pk=listing_id)
+            # user_id = int(request.POST.get("user"))
+            # usr = User.objects.get(pk=user_id)
+            usr.watchlist.add(listing)
+        elif request.POST.get("delete") != None:
+            listing_id = request.POST.get("delete")
+            listing = Listing.objects.get(pk=listing_id)
+            # user_id = int(request.POST.get("user"))
+            # usr = User.objects.get(pk=user_id)
+            usr.watchlist.remove(listing)
+        return HttpResponseRedirect(reverse("watchlist"))
+    return render(request, "auctions/watchlist.html", {
+        "listings": usr.watchlist.all()
+    })

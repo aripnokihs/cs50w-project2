@@ -3,8 +3,14 @@ body {
 }
 
 .show_listing {
-    display: block;
     border: 1px solid gray;
     border-radius: 5px;
     margin-top: 10px;
+}
+
+.flex-container {
+    display: flex;
+    gap: 200px;
+    flex-direction: row;
+    padding: 10px;
 }
