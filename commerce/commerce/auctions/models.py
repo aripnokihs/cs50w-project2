@@ -25,10 +25,18 @@ class Listing(models.Model):
     def __str__(self):
         return f"{self.title}: '{self.description[:50] if (len(self.description) > 50) else self.description}' starting_bid: {self.starting_bid}"
 
+    def bid_price(self):
+        highest_bid = self.bids_for_listing.order_by('-bid_price').first()
+        return highest_bid.bid_price if highest_bid else self.starting_bid
 
 
-class Bid:
-    pass
+class Bid(models.Model):
+    listing = models.ForeignKey('Listing', on_delete=CASCADE, default=1, related_name="bids_for_listing")
+    bid_price = models.IntegerField()
+    bidder = models.ForeignKey('User', on_delete=CASCADE, default=1, related_name="my_bids")
+
+    def __str__(self):
+        return f"{self.listing}: {self.bid_price} by {self.bidder}"
 
 class Comment:
     pass

@@ -15,6 +15,15 @@
   <div>
     <b>Creator:</b> {{ listing.creator }}
   </div>
+  <div style="display: flex; justify-content: flex-end; padding-right: 100px;">
+    <form action="{% url 'listing_page' listing_id%}" method="POST">
+      {% csrf_token %}
+      <label for="bid_price">Bid</label>
+      <input type="number" class="form-control" id="bid_price">
+      {#        <input type="hidden" name="user" value="{{ user.id }}">#}
+      <button type="submit" class="btn btn-primary" name="add" value="{{ listing.id }}">ADD</button>
+    </form>
+  </div>
   <div style="display: flex; justify-content: flex-end; padding-top: 20px; padding-right: 20px;">
     <div class="row">
       <div style="padding-right: 20px;">
@@ -24,7 +33,7 @@
       </div>
       <form action="{% url 'watchlist' %}" method="POST">
         {% csrf_token %}
-{#        <input type="hidden" name="user" value="{{ user.id }}">#}
+        {#        <input type="hidden" name="user" value="{{ user.id }}">#}
         <button type="submit" class="btn btn-primary" name="add" value="{{ listing.id }}">ADD</button>
       </form>
     </div>
