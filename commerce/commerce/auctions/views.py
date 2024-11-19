@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models import CharField
+from django.forms import HiddenInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -99,13 +100,15 @@ def create_listing(request):
         if form.is_valid():
             print("inside3")
             print(form)
-            form.save()
+            listing = form.save(commit=False)
+            listing.creator = request.user
+            listing.save()
             return HttpResponseRedirect(reverse("index"))
         else:
             print(form.errors)
             messages.error(request, "There was an error creating your listing. Please try again.")
     return render(request, "auctions/create_listing.html", {
-        "create_listing_form": Create_listing_form()
+        "create_listing_form": Create_listing_form({'creator': request.user})
     })
 
 def listing_page(request, listing_id):
@@ -115,4 +118,13 @@ def listing_page(request, listing_id):
     })
 
 def watchlist(request):
-    pass
+    if request.method == "POST":
+        listing_id = request.POST.get("add")
+        listing = Listing.objects.get(pk=listing_id)
+        user_id = int(request.POST.get("user"))
+        usr = User.objects.get(pk=user_id)
+        usr.watchlist.add(listing)
+
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        print("WRONG!")
