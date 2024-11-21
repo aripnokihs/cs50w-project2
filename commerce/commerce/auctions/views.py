@@ -10,7 +10,7 @@ from django.urls import reverse
 from django import forms
 from unicodedata import category
 
-from .models import User, Listing, Category
+from .models import User, Listing, Category, Bid
 
 class Create_listing_form(forms.ModelForm):
     class Meta:
@@ -113,8 +113,22 @@ def create_listing(request):
 
 def listing_page(request, listing_id):
     if request.method == "POST":
-        bidder = request.user
-        price = request.POST.get("bid_price")
+        if request.POST.get("delete") != None:
+            bidder = request.user
+            price = int(request.POST.get("bid_price"))
+        # print(price, type(price))
+            listing = Listing.objects.get(pk=listing_id)
+        # print(listing.bid_price, type(listing.bid_price))
+            if price < listing.bid_price:
+                return render(request, "auctions/listing_page.html", {
+                    "listing": listing,
+                    "price_error": True,
+                })
+            new_bid = Bid(bidder=bidder, bid_price=price, listing=listing)
+            new_bid.save()
+        elif request.POST.get("close") != None:
+            listing = Listing.objects.get(pk=listing_id)
+            listing.is_open = False
 
     listing = Listing.objects.get(pk=listing_id)
     return render(request, "auctions/listing_page.html", {

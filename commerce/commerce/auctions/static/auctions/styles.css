@@ -14,3 +14,9 @@ body {
     flex-direction: row;
     padding: 10px;
 }
+
+.form-inline {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+}
