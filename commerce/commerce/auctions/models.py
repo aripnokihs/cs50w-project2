@@ -21,7 +21,7 @@ class Listing(models.Model):
     image = models.ImageField(upload_to=None, height_field=None, width_field=None, max_length=100, default=1)
     category = models.ForeignKey(Category, on_delete=CASCADE, default=1, related_name="inside_category")
     creator = models.ForeignKey('User', on_delete=CASCADE, default=1, related_name="creates")
-    is_open = models.IntegerField(default=1)
+    is_open = models.BooleanField(default=1)
 
     def __str__(self):
         return f"{self.title}: '{self.description[:50] if (len(self.description) > 50) else self.description}' starting_bid: {self.starting_bid}"

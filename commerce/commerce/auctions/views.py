@@ -113,7 +113,9 @@ def create_listing(request):
 
 def listing_page(request, listing_id):
     if request.method == "POST":
-        if request.POST.get("delete") != None:
+        print(request.POST.get("bid"))
+        print(request.POST.get("close"))
+        if request.POST.get("bid") != None:
             bidder = request.user
             price = int(request.POST.get("bid_price"))
         # print(price, type(price))
@@ -129,6 +131,7 @@ def listing_page(request, listing_id):
         elif request.POST.get("close") != None:
             listing = Listing.objects.get(pk=listing_id)
             listing.is_open = False
+            listing.save()
 
     listing = Listing.objects.get(pk=listing_id)
     return render(request, "auctions/listing_page.html", {

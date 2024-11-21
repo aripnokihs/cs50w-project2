@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='listing',
             name='is_open',
-            field=models.BinaryField(default=True),
+            field=models.BooleanField(default=True),
         ),
     ]
