@@ -22,28 +22,45 @@
     <b>Description:</b>{{ listing.description }}
   </div>
   <div>
-    <b>Price:</b> {{ listing.bid_price }}$
+    <h3>${{ listing.bid_price }}</h3>
   </div>
-  <div>
-    <b>Creator:</b> {{ listing.creator }}
-  </div>
-  <div style="display: flex; justify-content: flex-start; padding-right: 100px;">
-    <form action="{% url 'listing_page' listing.id %}" method="POST">
-      {% csrf_token %}
-      <label for="bid_price">Bid</label>
-      <div style="display: flex; justify-content: flex-start; gap: 10px">
-        <input type="number" class="form-control" id="bid_price" name="bid_price">
-        <input type="hidden" name="user" value="{{ user.id }}">
-        <button type="submit" class="btn btn-primary" name="bid" value="{{ listing.id }}">BID</button>
-      </div>
-    </form>
-  </div>
+  
+  {% if listing.is_open == True %}
+    {% if listing.winner == user %}
+      <div>{{ listing.bids_for_listing.count }} bid(s) so far, Your bid is the current bid.</div>
+    {% else %}
+      <div>{{ listing.bids_for_listing.count }} bid(s) so far, {{ listing.winner }}'s bid is the current bid.</div>
+    {% endif %}
+    <div style="display: flex; justify-content: flex-start; padding-right: 100px;">
+      <form action="{% url 'listing_page' listing.id %}" method="POST">
+        {% csrf_token %}
+        <label for="bid_price"></label>
+        <div style="display: flex; justify-content: flex-start; gap: 10px; padding-bottom: 10px;">
+          <input type="number" class="form-control" id="bid_price" name="bid_price" placeholder="Bid">
+          <input type="hidden" name="user" value="{{ user.id }}">
+        
+        </div>
+        <button type="submit" class="btn btn-primary" name="bid" value="{{ listing.id }}">PLACE BID</button>
+      </form>
+    </div>
+  {% else %}
+    <b>Winner:</b> {{ listing.winner }}
+  {% endif %}
   <div>
     {% if price_error == True %}
       <b style="color: red">Price Error</b>
     {% endif %}
   </div>
-  <div style="display: flex; justify-content: flex-end; padding-top: 20px; padding-right: 20px;">
+  <h3 style="padding-top:20px;">Details</h3>
+  <ul>
+    <li>
+      <b>Creator:</b> {{ listing.creator }}
+    </li>
+  <li>
+    <b>Category:</b> {{ listing.category }}
+  </li>
+  </ul>
+  <div style="display: flex; justify-content: flex-start; padding-top: 20px; padding-right: 20px;">
     <div class="row">
       <div style="padding-right: 20px;">
         <a href="{% url 'index' %}">

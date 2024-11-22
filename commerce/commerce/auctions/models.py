@@ -24,11 +24,15 @@ class Listing(models.Model):
     is_open = models.BooleanField(default=1)
 
     def __str__(self):
-        return f"{self.title}: '{self.description[:50] if (len(self.description) > 50) else self.description}' starting_bid: {self.starting_bid}"
+        return f"{self.title}: \t price: {self.starting_bid}"
     @property
     def bid_price(self):
         highest_bid = self.bids_for_listing.order_by('-bid_price').first()
         return highest_bid.bid_price if highest_bid else self.starting_bid
+
+    def winner(self):
+        highest_bid = self.bids_for_listing.order_by('-bid_price').first()
+        return highest_bid.bidder if highest_bid else "No Winner"
 
 
 class Bid(models.Model):
