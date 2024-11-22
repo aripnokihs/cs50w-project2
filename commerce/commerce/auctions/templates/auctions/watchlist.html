@@ -5,29 +5,35 @@
   {% for listing in listings %}
     <div class="show_listing">
       <div class="flex-container">
+        <div>
+          {% if listing.image != "1" %}
+            <img src="{{ listing.image.url }}" alt="{{ listing.title }}" style="width: 500px;">
+          {% endif %}
+        </div>
         <!-- Title -->
-        <a href="{% url 'listing_page' listing.id %}" style="text-decoration: none;">
-          <h3 style="margin: 0;">{{ listing.title }}</h3>
-        </a>
+        <div>
+          <a href="{% url 'listing_page' listing.id %}" style="text-decoration: none;">
+            <h3 style="margin: 0;">{{ listing.title }}</h3>
+          </a>
+          <div>
+            <b>Description:</b>{{ listing.description|truncatechars:50 }}
+          </div>
+          <div>
+            <b>Price:</b> {{ listing.bid_price }}$
+          </div>
+          <div>
+            <b>Creator:</b> {{ listing.creator }}
+          </div>
+        </div>
         <!-- Form -->
         <form action="{% url 'watchlist' %}" method="POST" style="margin: 0;">
           {% csrf_token %}
           <button type="submit" class="btn btn-danger btn-sm" name="delete" value="{{ listing.id }}">DELETE</button>
         </form>
-      </div>
-      {% if listing.image != "1" %}
-        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" style="width: 500px;">
-      {% endif %}
       
-      <div>
-        <b>Description:</b>{{ listing.description|truncatechars:50 }}
       </div>
-      <div>
-        <b>Price:</b> {{ listing.bid_price }}$
-      </div>
-      <div>
-        <b>Creator:</b> {{ listing.creator }}
-      </div>
+    
+    
     </div>
   {% endfor %}
 {% endblock %}
