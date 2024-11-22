@@ -24,7 +24,7 @@ class Listing(models.Model):
     is_open = models.BooleanField(default=1)
 
     def __str__(self):
-        return f"{self.title}: \t price: {self.starting_bid}"
+        return f"{self.title}:  price: {self.starting_bid}"
     @property
     def bid_price(self):
         highest_bid = self.bids_for_listing.order_by('-bid_price').first()
@@ -43,6 +43,8 @@ class Bid(models.Model):
     def __str__(self):
         return f"{self.listing}: {self.bid_price} by {self.bidder}"
 
-class Comment:
-    pass
+class Comment(models.Model):
+    commenter = models.ForeignKey('User', on_delete=CASCADE, default=1, related_name="comments_of_user")
+    content = models.CharField(max_length=1000)
+    listing = models.ForeignKey('Listing', on_delete=CASCADE, default=1, related_name="comments_of_listing")
 

@@ -10,7 +10,11 @@ from django.urls import reverse
 from django import forms
 from unicodedata import category
 
-from .models import User, Listing, Category, Bid
+from .models import User, Listing, Category, Bid, Comment
+
+class Comment_form(forms.Form):
+    content = forms.CharField(max_length=64, label="", widget=forms.Textarea(attrs={
+        'class': 'form-control', 'style': 'width: 40%; height: 100px; margin-bottom: 10px;'}))
 
 class Create_listing_form(forms.ModelForm):
     class Meta:
@@ -115,6 +119,7 @@ def listing_page(request, listing_id):
     if request.method == "POST":
         print(request.POST.get("bid"))
         print(request.POST.get("close"))
+        print(request.POST.get("comment"))
         if request.POST.get("bid") != None:
             bidder = request.user
             price = int(request.POST.get("bid_price"))
@@ -125,6 +130,7 @@ def listing_page(request, listing_id):
                 return render(request, "auctions/listing_page.html", {
                     "listing": listing,
                     "price_error": True,
+                    "comment_form": Comment_form(),
                 })
             new_bid = Bid(bidder=bidder, bid_price=price, listing=listing)
             new_bid.save()
@@ -132,10 +138,16 @@ def listing_page(request, listing_id):
             listing = Listing.objects.get(pk=listing_id)
             listing.is_open = False
             listing.save()
-
+        elif request.POST.get("content") != None:
+            content = request.POST.get("content")
+            commenter = request.user
+            listing = Listing.objects.get(pk=listing_id)
+            new_comment = Comment(content=content, commenter=commenter,listing=listing)
+            new_comment.save()
     listing = Listing.objects.get(pk=listing_id)
     return render(request, "auctions/listing_page.html", {
         "listing": listing,
+        "comment_form": Comment_form(),
     })
 
 def watchlist(request):
@@ -157,3 +169,9 @@ def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "listings": usr.watchlist.all()
     })
+
+def delete_comment(request, comment_id):
+    comment = Comment.objects.get(pk=comment_id)
+    listing_id = comment.listing.id
+    comment.delete()
+    return HttpResponseRedirect(reverse("listing_page", args=(listing_id, )))

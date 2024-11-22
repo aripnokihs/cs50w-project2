@@ -31,6 +31,7 @@
     {% else %}
       <div>{{ listing.bids_for_listing.count }} bid(s) so far, {{ listing.winner }}'s bid is the current bid.</div>
     {% endif %}
+    {% if user.is_authenticated %}
     <div style="display: flex; justify-content: flex-start; padding-right: 100px;">
       <form action="{% url 'listing_page' listing.id %}" method="POST">
         {% csrf_token %}
@@ -43,6 +44,7 @@
         <button type="submit" class="btn btn-primary" name="bid" value="{{ listing.id }}">PLACE BID</button>
       </form>
     </div>
+      {% endif %}
   {% else %}
     <b>Winner:</b> {{ listing.winner }}
   {% endif %}
@@ -56,9 +58,9 @@
     <li>
       <b>Creator:</b> {{ listing.creator }}
     </li>
-  <li>
-    <b>Category:</b> {{ listing.category }}
-  </li>
+    <li>
+      <b>Category:</b> {{ listing.category }}
+    </li>
   </ul>
   <div style="display: flex; justify-content: flex-start; padding-top: 20px; padding-right: 20px;">
     <div class="row">
@@ -67,11 +69,32 @@
           <button type="submit" class="btn btn-outline-primary" name="return" value=0>RETURN</button>
         </a>
       </div>
+      {% if user.is_authenticated %}
       <form action="{% url 'watchlist' %}" method="POST">
         {% csrf_token %}
         {#        <input type="hidden" name="user" value="{{ user.id }}">#}
         <button type="submit" class="btn btn-primary" name="add" value="{{ listing.id }}">ADD</button>
       </form>
+      {% endif %}
     </div>
+  </div>
+  <div style="padding-top: 30px;">
+    <h3>Comments:</h3>
+    {% if user.is_authenticated %}
+    <form action="{% url 'listing_page' listing.id %}" method="POST">
+      {% csrf_token %}
+      {{ comment_form }}
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  {% endif %}
+    <hr>
+    {% for comment in listing.comments_of_listing.all %}
+      
+      <h5>{{ comment.commenter }}</h5>
+      <p>{{ comment.content }}</p>
+      {% if comment.commenter == user %}
+        <a href="{% url 'delete_comment' comment.id %}" methods="POST"  style="color: red;">delete</a>
+      {% endif %}
+    {% endfor %}
   </div>
 {% endblock %}
